@@ -1,0 +1,17 @@
+# 登录凭据
+cookie.txt
+.env
+openai_key.txt
+
+# 本地抓取数据与生成结果
+data/
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# 临时文件
+*.tmp

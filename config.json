@@ -1,0 +1,31 @@
+{
+  "cookie": "",
+  "user_uin": "",
+  "min_confidence": 0.7,
+  "output_dir": "output",
+  "data_dir": "data",
+  "ai_model": "gpt-5.4-mini",
+  "ai_batch_size": 20,
+  "categories": {
+    "languages": {
+      "普通话": {"include_any": ["国语", "普通话", "华语"], "min_confidence": 0.8},
+      "粤语": {"include_any": ["粤语"], "min_confidence": 0.8},
+      "英语": {"include_any": ["英语", "欧美"], "min_confidence": 0.8},
+      "日语": {"include_any": ["日语"], "min_confidence": 0.8},
+      "韩语": {"include_any": ["韩语"], "min_confidence": 0.8}
+    },
+    "genres": {
+      "流行": {"include_any": ["流行", "Pop"], "min_confidence": 0.7},
+      "摇滚": {"include_any": ["摇滚", "重金属", "朋克"], "min_confidence": 0.7},
+      "民谣": {"include_any": ["民谣", "乡村"], "min_confidence": 0.7},
+      "电子": {"include_any": ["电子", "Electropop", "EDM", "舞曲"], "min_confidence": 0.7},
+      "R&B": {"include_any": ["R&B", "灵魂", "Funk"], "min_confidence": 0.7},
+      "嘻哈": {"include_any": ["嘻哈", "Hip-Hop", "Rap", "说唱"], "min_confidence": 0.7},
+      "轻音乐": {"include_any": ["轻音乐", "纯音乐", "古典", "钢琴"], "min_confidence": 0.7}
+    },
+    "emotions": {
+      "抒情": {"include_any": ["抒情", "伤感", "安静", "治愈", "慢歌"], "min_confidence": 0.6},
+      "热血": {"include_any": ["热血", "激昂", "燃", "运动"], "min_confidence": 0.6}
+    }
+  }
+}
