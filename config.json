@@ -4,8 +4,6 @@
   "min_confidence": 0.7,
   "output_dir": "output",
   "data_dir": "data",
-  "ai_model": "gpt-5.4-mini",
-  "ai_batch_size": 20,
   "categories": {
     "languages": {
       "普通话": {"include_any": ["国语", "普通话", "华语"], "min_confidence": 0.8},

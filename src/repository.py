@@ -15,8 +15,6 @@ class Repository:
         self.checkpoint_file = os.path.join(self.data_dir, "checkpoint.json")
         self.overrides_file = os.path.join(self.data_dir, "overrides.json")
         self.failures_file = os.path.join(self.data_dir, "failures.jsonl")
-        self.ai_cache_file = os.path.join(self.data_dir, "ai_classification_cache.jsonl")
-        self.import_state_file = os.path.join(self.data_dir, "qq_import_state.json")
 
     @staticmethod
     def _atomic_write_text(path, text):
@@ -76,37 +74,6 @@ class Repository:
             if mid:
                 cache[mid] = item
         return cache
-
-    def load_ai_cache(self, model=None, prompt_version=None):
-        cache = {}
-        for item in self._read_jsonl(self.ai_cache_file):
-            mid = str(item.get("mid", ""))
-            if not mid:
-                continue
-            if model and item.get("model") != model:
-                continue
-            if prompt_version and item.get("prompt_version") != prompt_version:
-                continue
-            cache[mid] = item
-        return cache
-
-    def save_ai_items(self, items):
-        cache = self.load_ai_cache()
-        for song_mid, classification in items.items():
-            item = dict(classification)
-            item["mid"] = str(song_mid)
-            cache[str(song_mid)] = item
-        self._atomic_write_text(self.ai_cache_file, self._jsonl_text(cache.values()))
-
-    def clear_ai_cache(self, model=None, prompt_version=None):
-        """删除指定模型/提示版本的缓存；未指定时清空全部 AI 缓存。"""
-        retained = []
-        for item in self._read_jsonl(self.ai_cache_file):
-            model_matches = model is None or item.get("model") == model
-            prompt_matches = prompt_version is None or item.get("prompt_version") == prompt_version
-            if not (model_matches and prompt_matches):
-                retained.append(item)
-        self._atomic_write_text(self.ai_cache_file, self._jsonl_text(retained))
 
     def save_metadata_item(self, song_mid, detail):
         """按 mid 原子更新详情缓存，避免重复追加和半行数据。"""
@@ -183,28 +150,3 @@ class Repository:
             "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         self.replace_failures(failures.values())
-
-    def load_import_state(self):
-        default = {"version": 1, "playlists": {}}
-        if not os.path.exists(self.import_state_file):
-            return default
-        try:
-            with open(self.import_state_file, "r", encoding="utf-8") as handle:
-                state = json.load(handle)
-            if not isinstance(state, dict):
-                return default
-            if not isinstance(state.get("playlists"), dict):
-                state["playlists"] = {}
-            return {**default, **state}
-        except (OSError, json.JSONDecodeError) as exc:
-            logger.warning("读取 QQ 导入进度失败，将根据线上歌单重新核对：%s", exc)
-            return default
-
-    def save_import_state(self, state):
-        payload = dict(state)
-        payload["version"] = 1
-        payload["updated_at"] = datetime.now(timezone.utc).isoformat()
-        self._atomic_write_text(
-            self.import_state_file,
-            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        )

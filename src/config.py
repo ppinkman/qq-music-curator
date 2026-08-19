@@ -32,9 +32,7 @@ DEFAULT_CONFIG = {
     },
     "min_confidence": 0.7,
     "output_dir": "output",
-    "data_dir": "data"
-    ,"ai_model": "gpt-5.4-mini"
-    ,"ai_batch_size": 20
+    "data_dir": "data",
 }
 
 class AppConfig:
@@ -47,12 +45,10 @@ class AppConfig:
         self.min_confidence = self.raw_config.get("min_confidence", 0.7)
         self.output_dir = self.raw_config.get("output_dir", "output")
         self.data_dir = self.raw_config.get("data_dir", "data")
-        self.ai_model = self.raw_config.get("ai_model", "gpt-5.4-mini")
-        self.ai_batch_size = int(self.raw_config.get("ai_batch_size", 20))
 
     @staticmethod
     def _merge_categories(configured):
-        """保留用户规则，并补上新版增加但旧配置中缺失的分类维度。"""
+        """保留用户规则，并补上缺失的分类维度。"""
         merged = {}
         for dimension, defaults in DEFAULT_CONFIG["categories"].items():
             custom = configured.get(dimension) if isinstance(configured, dict) else None

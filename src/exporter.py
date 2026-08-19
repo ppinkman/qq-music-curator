@@ -31,7 +31,7 @@ class PlaylistExporter:
             if needs_review:
                 review_songs.append(song)
 
-            # AI 新格式直接返回固定歌单名；兼容旧格式仅用于 demo。
+            # 规则分类按 language/genre/emotion 三个维度返回分类名。
             if isinstance(cats, dict):
                 all_cat_names = [name for names in cats.values() for name in names]
             else:
@@ -124,9 +124,9 @@ class PlaylistExporter:
                 conf = clf.get("confidence", {}).get("overall", 0.0)
                 evidence = "|".join(clf.get("evidence", []))
                 if not clf:
-                    reason = "尚未进行 AI 分类"
+                    reason = "尚未进行自动分类"
                 else:
-                    reason = clf.get("uncertainty_reason") or "AI 置信度偏低或未命中固定分类"
+                    reason = "规则未命中或整体置信度低于阈值"
                 writer.writerow([
                     song.get("mid"),
                     song.get("name"),
@@ -148,10 +148,10 @@ class PlaylistExporter:
         coverage_rate = round(((total_count - review_count) / total_count * 100), 1) if total_count > 0 else 0.0
 
         with open(temp_path, "w", encoding="utf-8") as f:
-            f.write("# QQ 音乐“我喜欢”歌单智能分类报告\n\n")
+            f.write("# QQ 音乐“我喜欢”歌单自动分类报告\n\n")
             f.write(f"- **歌曲总数**: {total_count} 首\n")
             classified_count = sum(1 for song in all_songs if song.get("classification"))
-            f.write(f"- **已完成 AI 分类**: {classified_count} 首\n")
+            f.write(f"- **已完成规则分类**: {classified_count} 首\n")
             f.write(f"- **无需复核**: {total_count - review_count} 首\n")
             f.write(f"- **待复核/低置信度**: {review_count} 首 (`review.csv`)\n")
             f.write(f"- **无需复核比例**: {coverage_rate}%\n\n")
